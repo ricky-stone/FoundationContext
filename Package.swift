@@ -19,6 +19,10 @@ let package = Package(
         .target(
             name: "FoundationContext"
         ),
+        .testTarget(
+            name: "FoundationContextTests",
+            dependencies: ["FoundationContext"]
+        )
     ],
     swiftLanguageModes: [.v6]
 )
