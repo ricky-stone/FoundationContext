@@ -19,7 +19,6 @@ let package = Package(
         .target(
             name: "FoundationContext"
         ),
-        
     ],
     swiftLanguageModes: [.v6]
 )
