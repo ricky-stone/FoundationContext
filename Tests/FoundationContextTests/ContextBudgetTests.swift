@@ -7,6 +7,7 @@ func availableInputTokenCountSubtractsReservedTokens() throws {
         maximumTokenCount: 4096,
         reservedResponseTokenCount: 800
     )
+    
     #expect(budget.availableInputTokenCount == 3296)
 }
 
