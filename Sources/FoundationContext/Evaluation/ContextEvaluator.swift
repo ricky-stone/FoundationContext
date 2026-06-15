@@ -1,0 +1,26 @@
+public struct ContextEvaluator: Sendable {
+    public let budget: ContextBudget
+    public let policy: ContextBudgetPolicy
+    private let tokenCounter: any ContextTokenCounting
+    
+    public init(
+        budget: ContextBudget,
+        policy: ContextBudgetPolicy = .default,
+        tokenCounter: any ContextTokenCounting
+    ) {
+        self.budget = budget
+        self.policy = policy
+        self.tokenCounter = tokenCounter
+    }
+    
+    public func evaluate(messages: [ContextMessage]) async throws -> ContextBudgetEvaluation {
+        let transcript = ContextTranscript(messages: messages)
+        let usage = try await tokenCounter.usage(for: transcript.formattedText)
+        
+        return ContextBudgetEvaluation(
+            budget: budget,
+            usage: usage,
+            policy: policy
+        )
+    }
+}
