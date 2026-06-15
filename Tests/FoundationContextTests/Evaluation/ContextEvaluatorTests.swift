@@ -124,3 +124,27 @@ func passesFormattedTranscriptTextToTokenCounter() async throws {
     
     #expect(receivedText == expectedText)
 }
+
+@Test
+func usesCustomPolicyWhenEvaluatingText() async throws {
+    let budget = try ContextBudget(
+        maximumTokenCount: 1000,
+        reservedResponseTokenCount: 200
+    )
+    
+    let policy = try ContextBudgetPolicy(nearLimitThresholdTokenCount: 300)
+    let usage = try ContextUsage(inputTokenCount: 500)
+    let tokenCounter = StubTokenCounter(usage: usage)
+    
+    let evaluator = ContextEvaluator(
+        budget: budget,
+        policy: policy,
+        tokenCounter: tokenCounter
+    )
+    
+    let evaluation = try await evaluator.evaluate(text: "Some prompt")
+    
+    #expect(evaluation.policy == policy)
+    #expect(evaluation.remainingInputTokenCount == 300)
+    #expect(evaluation.status == .nearLimit)
+}
