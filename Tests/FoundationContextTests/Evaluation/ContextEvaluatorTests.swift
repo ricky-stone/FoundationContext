@@ -24,7 +24,7 @@ private actor RecordingTokenCounter: ContextTokenCounting {
 }
 
 @Test
-func evaluatesMessagesUsingTokenCounterUsage() async throws {
+func evaluatesTextUsingTokenCounterUsage() async throws {
     let budget = try ContextBudget(
         maximumTokenCount: 4096,
         reservedResponseTokenCount: 800
@@ -38,9 +38,7 @@ func evaluatesMessagesUsingTokenCounterUsage() async throws {
         tokenCounter: tokenCounter
     )
     
-    let evaluation = try await evaluator.evaluate(messages: [
-        ContextMessage(role: .user, content: "Explain Swift actors.")
-    ])
+    let evaluation = try await evaluator.evaluate(text: "Explain Swift actors.")
     
     #expect(evaluation.usage == usage)
     #expect(evaluation.budget == budget)
@@ -67,6 +65,30 @@ func evaluatesTranscriptUsingTokenCounterUsage() async throws {
     ])
     
     let evaluation = try await evaluator.evaluate(transcript: transcript)
+    
+    #expect(evaluation.usage == usage)
+    #expect(evaluation.budget == budget)
+    #expect(evaluation.status == .withinBudget)
+}
+
+@Test
+func evaluatesMessagesUsingTokenCounterUsage() async throws {
+    let budget = try ContextBudget(
+        maximumTokenCount: 4096,
+        reservedResponseTokenCount: 800
+    )
+    
+    let usage = try ContextUsage(inputTokenCount: 100)
+    let tokenCounter = StubTokenCounter(usage: usage)
+    
+    let evaluator = ContextEvaluator(
+        budget: budget,
+        tokenCounter: tokenCounter
+    )
+    
+    let evaluation = try await evaluator.evaluate(messages: [
+        ContextMessage(role: .user, content: "Explain Swift actors.")
+    ])
     
     #expect(evaluation.usage == usage)
     #expect(evaluation.budget == budget)
@@ -102,4 +124,3 @@ func passesFormattedTranscriptTextToTokenCounter() async throws {
     
     #expect(receivedText == expectedText)
 }
-

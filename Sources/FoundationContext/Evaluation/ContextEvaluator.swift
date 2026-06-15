@@ -20,7 +20,11 @@ public struct ContextEvaluator: Sendable {
     }
     
     public func evaluate(transcript: ContextTranscript) async throws -> ContextBudgetEvaluation {
-        let usage = try await tokenCounter.usage(for: transcript.formattedText)
+        return try await evaluate(text: transcript.formattedText)
+    }
+    
+    public func evaluate(text: String) async throws -> ContextBudgetEvaluation {
+        let usage = try await tokenCounter.usage(for: text)
         
         return ContextBudgetEvaluation(
             budget: budget,
