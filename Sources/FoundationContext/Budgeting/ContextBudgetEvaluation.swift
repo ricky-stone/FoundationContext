@@ -1,6 +1,7 @@
 public struct ContextBudgetEvaluation: Sendable, Equatable {
     public let budget: ContextBudget
     public let usage: ContextUsage
+    public let policy: ContextBudgetPolicy
     
     public var remainingInputTokenCount: Int {
         budget.availableInputTokenCount - usage.inputTokenCount
@@ -10,8 +11,25 @@ public struct ContextBudgetEvaluation: Sendable, Equatable {
         remainingInputTokenCount < 0
     }
     
-    public init(budget: ContextBudget, usage: ContextUsage) {
+    public var status: ContextBudgetStatus {
+        if isOverBudget {
+            return .overBudget
+        }
+        
+        if remainingInputTokenCount <= policy.nearLimitThresholdTokenCount {
+            return .nearLimit
+        }
+        
+        return .withinBudget
+    }
+    
+    public init(
+        budget: ContextBudget,
+        usage: ContextUsage,
+        policy: ContextBudgetPolicy = .default
+    ) {
         self.budget = budget
         self.usage = usage
+        self.policy = policy
     }
 }

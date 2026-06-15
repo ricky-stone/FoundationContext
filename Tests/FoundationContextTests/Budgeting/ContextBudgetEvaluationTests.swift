@@ -19,7 +19,7 @@ func calculatesRemainingInputTokenCount() throws {
 }
 
 @Test
-func returnsTrueWhenUsageExceedsAvailableInputTokens() throws {
+func isOverBudgetReturnsTrueWhenUsageExceedsAvailableInputTokens() throws {
     let budget = try ContextBudget(
         maximumTokenCount: 4096,
         reservedResponseTokenCount: 800
@@ -33,4 +33,55 @@ func returnsTrueWhenUsageExceedsAvailableInputTokens() throws {
     )
     
     #expect(evaluation.isOverBudget)
+}
+
+@Test
+func returnsWithinBudgetWhenUsageIsBelowNearLimitThreshold() throws {
+    let budget = try ContextBudget(
+        maximumTokenCount: 4096,
+        reservedResponseTokenCount: 800
+    )
+    
+    let usage = try ContextUsage(inputTokenCount: 100)
+    
+    let evaluation = ContextBudgetEvaluation(
+        budget: budget,
+        usage: usage
+    )
+    
+    #expect(evaluation.status == .withinBudget)
+}
+
+@Test
+func returnsOverBudgetWhenUsageExceedsAvailableInputTokens() throws {
+    let budget = try ContextBudget(
+        maximumTokenCount: 4096,
+        reservedResponseTokenCount: 800
+    )
+    
+    let usage = try ContextUsage(inputTokenCount: 8000)
+    
+    let evaluation = ContextBudgetEvaluation(
+        budget: budget,
+        usage: usage
+    )
+    
+    #expect(evaluation.status == .overBudget)
+}
+
+@Test
+func returnsNearLimitWhenUsageIsCloseToAvailableInputTokens() throws {
+    let budget = try ContextBudget(
+        maximumTokenCount: 4096,
+        reservedResponseTokenCount: 800
+    )
+    
+    let usage = try ContextUsage(inputTokenCount: 3200)
+    
+    let evaluation = ContextBudgetEvaluation(
+        budget: budget,
+        usage: usage
+    )
+    
+    #expect(evaluation.status == .nearLimit)
 }
