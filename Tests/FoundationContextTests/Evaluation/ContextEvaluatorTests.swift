@@ -48,6 +48,32 @@ func evaluatesMessagesUsingTokenCounterUsage() async throws {
 }
 
 @Test
+func evaluatesTranscriptUsingTokenCounterUsage() async throws {
+    let budget = try ContextBudget(
+        maximumTokenCount: 4096,
+        reservedResponseTokenCount: 800
+    )
+    
+    let usage = try ContextUsage(inputTokenCount: 100)
+    let tokenCounter = StubTokenCounter(usage: usage)
+    
+    let evaluator = ContextEvaluator(
+        budget: budget,
+        tokenCounter: tokenCounter
+    )
+    
+    let transcript = ContextTranscript(messages: [
+        ContextMessage(role: .user, content: "Explain Swift actors.")
+    ])
+    
+    let evaluation = try await evaluator.evaluate(transcript: transcript)
+    
+    #expect(evaluation.usage == usage)
+    #expect(evaluation.budget == budget)
+    #expect(evaluation.status == .withinBudget)
+}
+
+@Test
 func passesFormattedTranscriptTextToTokenCounter() async throws {
     let budget = try ContextBudget(
         maximumTokenCount: 4096,
