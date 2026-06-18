@@ -1,7 +1,7 @@
 public struct ContextBudgetPolicy: Sendable, Equatable {
     public let nearLimitThresholdTokenCount: Int
     
-    public static var `default`: ContextBudgetPolicy {
+    public static var standard: ContextBudgetPolicy {
         return try! ContextBudgetPolicy(nearLimitThresholdTokenCount: 500)
     }
     

@@ -26,7 +26,7 @@ public struct ContextBudgetEvaluation: Sendable, Equatable {
     public init(
         budget: ContextBudget,
         usage: ContextUsage,
-        policy: ContextBudgetPolicy = .default
+        policy: ContextBudgetPolicy = .standard
     ) {
         self.budget = budget
         self.usage = usage

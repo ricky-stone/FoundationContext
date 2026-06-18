@@ -17,7 +17,7 @@ func throwsWhenNearLimitThresholdTokenCountIsNegative() {
 
 @Test
 func defaultPolicyUsesFiveHundredTokenThreshold() {
-    let policy = ContextBudgetPolicy.default
+    let policy = ContextBudgetPolicy.standard
     
     #expect(policy.nearLimitThresholdTokenCount == 500)
 }

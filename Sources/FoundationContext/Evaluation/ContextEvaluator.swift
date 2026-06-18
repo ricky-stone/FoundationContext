@@ -5,7 +5,7 @@ public struct ContextEvaluator: Sendable {
     
     public init(
         budget: ContextBudget,
-        policy: ContextBudgetPolicy = .default,
+        policy: ContextBudgetPolicy = .standard,
         tokenCounter: any ContextTokenCounting
     ) {
         self.budget = budget
