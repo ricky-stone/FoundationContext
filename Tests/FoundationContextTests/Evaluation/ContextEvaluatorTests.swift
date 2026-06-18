@@ -9,6 +9,16 @@ private struct StubTokenCounter: ContextTokenCounting {
     }
 }
 
+private struct FailingTokenCounter: ContextTokenCounting {
+    func usage(for text: String) async throws -> ContextUsage {
+        throw TestError.tokenCountingFailed
+    }
+}
+
+private enum TestError: Error, Equatable {
+    case tokenCountingFailed
+}
+
 private actor RecordingTokenCounter: ContextTokenCounting {
     private(set) var receivedText: String?
     let usage: ContextUsage
@@ -147,4 +157,21 @@ func usesCustomPolicyWhenEvaluatingText() async throws {
     #expect(evaluation.policy == policy)
     #expect(evaluation.remainingInputTokenCount == 300)
     #expect(evaluation.status == .nearLimit)
+}
+
+@Test
+func throwsWhenTokenCounterThrows() async throws {
+    let budget = try ContextBudget(
+        maximumTokenCount: 4096,
+        reservedResponseTokenCount: 800
+    )
+    
+    let evaluator = ContextEvaluator(
+        budget: budget,
+        tokenCounter: FailingTokenCounter()
+    )
+    
+    await #expect(throws: TestError.tokenCountingFailed) {
+        try await evaluator.evaluate(text: "Explain Swift actors.")
+    }
 }
