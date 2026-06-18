@@ -50,3 +50,14 @@ func throwsWhenReservedResponseTokenCountEqualsMaximumTokenCount() {
         )
     }
 }
+
+@Test
+func allowsZeroReservedResponseTokenCount() throws {
+    let budget = try ContextBudget(
+        maximumTokenCount: 4096,
+        reservedResponseTokenCount: 0
+    )
+    
+    #expect(budget.availableInputTokenCount == 4096)
+    #expect(budget.reservedResponseTokenCount == 0)
+}
