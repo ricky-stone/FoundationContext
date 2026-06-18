@@ -3,7 +3,7 @@ public struct ContextTranscript: Sendable, Equatable {
     
     public var formattedText: String {
         messages.map { message in
-            "\(message.role.displayName): \(message.content)"
+            "\(message.role.transcriptLabel): \(message.content)"
         }
         .joined(separator: "\n")
     }

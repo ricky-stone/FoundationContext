@@ -19,6 +19,28 @@ func formatsMessagesWithRolesAndContentInOrder() {
 }
 
 @Test
+func preservesMultilineMessageContentWhenFormattingTranscript() {
+    let transcript = ContextTranscript(messages: [
+        ContextMessage(
+            role: .user,
+            content: """
+            First line
+            Second line
+            Third line
+            """
+        )
+    ])
+    
+    let expectedText = """
+    User: First line
+    Second line
+    Third line
+    """
+    
+    #expect(transcript.formattedText == expectedText)
+}
+
+@Test
 func emptyTranscriptFormatsAsEmptyString() {
     let transcript = ContextTranscript(messages: [])
     

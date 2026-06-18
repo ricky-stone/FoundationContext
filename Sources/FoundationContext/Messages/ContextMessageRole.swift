@@ -5,7 +5,7 @@ public enum ContextMessageRole: Sendable, Equatable {
     case tool
     case summary
     
-    public var displayName: String {
+    public var transcriptLabel: String {
         switch self {
         case .system:
             return "System"
