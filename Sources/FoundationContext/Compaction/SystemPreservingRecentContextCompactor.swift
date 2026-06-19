@@ -32,3 +32,51 @@ public struct SystemPreservingRecentContextCompactor: ContextCompacting {
         )
     }
 }
+
+#if DEBUG
+import Playgrounds
+
+#Playground {
+    let messages = [
+        ContextMessage(role: .system, content: "You are helpful."),
+        ContextMessage(role: .user, content: "Old question."),
+        ContextMessage(role: .assistant, content: "Old answer."),
+        ContextMessage(role: .user, content: "New question."),
+        ContextMessage(role: .assistant, content: "New answer.")
+    ]
+    
+    let transcript = ContextTranscript(messages: messages)
+    
+    let budget = try ContextBudget(
+        maximumTokenCount: 4096,
+        reservedResponseTokenCount: 800
+    )
+    
+    let usage = try ContextUsage(inputTokenCount: 5000)
+    
+    let evaluation = ContextBudgetEvaluation(
+        budget: budget,
+        usage: usage
+    )
+    
+    let compactor = try SystemPreservingRecentContextCompactor(
+        keptMessageCount: 2
+    )
+    
+    let result = try await compactor.compact(
+        transcript: transcript,
+        evaluation: evaluation
+    )
+    
+    print("Before compaction:")
+    print(transcript.formattedText)
+    
+    print("After compaction:")
+    print(result.transcript.formattedText)
+    
+    print("Removed messages:")
+    print(ContextTranscript(messages: result.removedMessages).formattedText)
+    
+    print("Did compact: \(result.didCompact)")
+}
+#endif
