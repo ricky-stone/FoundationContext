@@ -26,8 +26,7 @@ public final class FoundationContext {
         }
         
         do {
-            let response = try await session.respond(to: message)
-            return response.content
+            return try await send(message)
         } catch LanguageModelSession.GenerationError.exceededContextWindowSize {
             return try await recoverAndRetry(message)
         }
@@ -48,10 +47,14 @@ public final class FoundationContext {
         )
     }
     
-    private func recoverAndRetry(_ message: String) async throws -> String {
-        reset()
+    private func send(_ message: String) async throws -> String {
         let response = try await session.respond(to: message)
         return response.content
+    }
+    
+    private func recoverAndRetry(_ message: String) async throws -> String {
+        reset()
+        return try await send(message)
     }
 }
 
