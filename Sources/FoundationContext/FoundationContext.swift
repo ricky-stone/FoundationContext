@@ -21,6 +21,12 @@ import Playgrounds
         instructions: "You are a helpful assistant. Keep replies short."
     )
     
-    _ = try await context.respond(to: "Say hello in one sentence.")
+    let first = try await context.respond(
+        to: "My name is Ricky. Reply with OK."
+    )
+    
+    let second = try await context.respond(
+        to: "What is my name?"
+    )
 }
 #endif
