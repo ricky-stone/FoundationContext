@@ -18,8 +18,14 @@ public final class FoundationContext {
     }
     
     public func respond(to message: String) async throws -> String {
-        let response = try await session.respond(to: message)
-        return response.content
+        do {
+            let response = try await session.respond(to: message)
+            return response.content
+        } catch LanguageModelSession.GenerationError.exceededContextWindowSize {
+            reset()
+            let response = try await session.respond(to: message)
+            return response.content
+        }
     }
     
     public func tokenCount() async throws -> Int {
@@ -47,7 +53,7 @@ import Playgrounds
     )
     
     let first = try await context.respond(
-        to: "My name is Ricky. Reply with OK."
+        to: "Please remember that my name is Ricky."
     )
     
     let second = try await context.respond(

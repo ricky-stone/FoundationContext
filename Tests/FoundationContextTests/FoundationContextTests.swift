@@ -12,3 +12,9 @@ func createsContextWithInstructions() {
         instructions: "You are helpful."
     )
 }
+
+@Test
+func resetsContext() {
+    let context = FoundationContext()
+    context.reset()
+}
