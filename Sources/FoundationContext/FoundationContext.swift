@@ -30,7 +30,7 @@ public final class FoundationContext {
         try await model.tokenCount(for: session.transcript)
     }
     
-    public func needsSummary(limit: Int = 4096) async throws -> Bool {
+    public func isTooLarge(limit: Int = 4096) async throws -> Bool {
         try await tokenCount() > limit
     }
     
@@ -65,6 +65,8 @@ import Playgrounds
     )
     
     let beforeReset = try await context.tokenCount()
+    
+    let isTooLarge = try await context.isTooLarge()
     
     context.reset()
     
