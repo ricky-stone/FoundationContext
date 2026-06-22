@@ -18,3 +18,10 @@ func resetsContext() {
     let context = FoundationContext()
     context.reset()
 }
+
+@Test
+func createsContextWithLimit() {
+    _ = FoundationContext(
+        tokenLimit: 4096
+    )
+}

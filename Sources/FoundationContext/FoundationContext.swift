@@ -3,14 +3,17 @@ import FoundationModels
 public final class FoundationContext {
     private let model: SystemLanguageModel
     private let instructions: String?
+    private let tokenLimit: Int
     private var session: LanguageModelSession
     
     public init(
         model: SystemLanguageModel = .default,
-        instructions: String? = nil
+        instructions: String? = nil,
+        tokenLimit: Int = 4096
     ) {
         self.model = model
         self.instructions = instructions
+        self.tokenLimit = tokenLimit
         self.session = LanguageModelSession(
             model: model,
             instructions: instructions
@@ -30,8 +33,8 @@ public final class FoundationContext {
         try await model.tokenCount(for: session.transcript)
     }
     
-    public func isTooLarge(limit: Int = 4096) async throws -> Bool {
-        try await tokenCount() > limit
+    public func isTooLarge() async throws -> Bool {
+        try await tokenCount() > tokenLimit
     }
     
     public func reset() {
