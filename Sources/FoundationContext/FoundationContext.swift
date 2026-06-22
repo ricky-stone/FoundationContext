@@ -2,13 +2,15 @@ import FoundationModels
 
 public final class FoundationContext {
     private let model: SystemLanguageModel
-    private let session: LanguageModelSession
+    private let instructions: String?
+    private var session: LanguageModelSession
     
     public init(
         model: SystemLanguageModel = .default,
         instructions: String? = nil
     ) {
         self.model = model
+        self.instructions = instructions
         self.session = LanguageModelSession(
             model: model,
             instructions: instructions
@@ -27,6 +29,13 @@ public final class FoundationContext {
     public func needsSummary(limit: Int = 4096) async throws -> Bool {
         try await tokenCount() > limit
     }
+    
+    public func reset() {
+        self.session = LanguageModelSession(
+            model: model,
+            instructions: instructions
+        )
+    }
 }
 
 #if DEBUG
@@ -42,11 +51,15 @@ import Playgrounds
     )
     
     let second = try await context.respond(
-        to: "What is my name?"
+        to: "What name did I tell you?"
     )
     
-    let tokens = try await context.tokenCount()
+    let beforeReset = try await context.tokenCount()
     
-    let needsSummary = try await context.needsSummary()
+    context.reset()
+    
+    let afterResetTokens = try await context.tokenCount()
+    
+    let afterReset = try await context.respond(to: "What name did I tell you?")
 }
 #endif
