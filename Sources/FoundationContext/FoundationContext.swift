@@ -1,15 +1,31 @@
 import FoundationModels
 
 public final class FoundationContext {
+    private let model: SystemLanguageModel
     private let session: LanguageModelSession
     
-    public init(instructions: String? = nil) {
-        self.session = LanguageModelSession(instructions: instructions)
+    public init(
+        model: SystemLanguageModel = .default,
+        instructions: String? = nil
+    ) {
+        self.model = model
+        self.session = LanguageModelSession(
+            model: model,
+            instructions: instructions
+        )
     }
     
     public func respond(to message: String) async throws -> String {
         let response = try await session.respond(to: message)
         return response.content
+    }
+    
+    public func tokenCount() async throws -> Int {
+        try await model.tokenCount(for: session.transcript)
+    }
+    
+    public func needsSummary(limit: Int = 4096) async throws -> Bool {
+        try await tokenCount() > limit
     }
 }
 
@@ -28,5 +44,9 @@ import Playgrounds
     let second = try await context.respond(
         to: "What is my name?"
     )
+    
+    let tokens = try await context.tokenCount()
+    
+    let needsSummary = try await context.needsSummary()
 }
 #endif
