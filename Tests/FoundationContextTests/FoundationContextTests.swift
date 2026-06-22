@@ -20,7 +20,7 @@ func resetsContext() {
 }
 
 @Test
-func createsContextWithLimit() {
+func createsContextWithTokenLimit() {
     _ = FoundationContext(
         tokenLimit: 4096
     )

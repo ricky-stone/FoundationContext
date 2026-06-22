@@ -21,6 +21,10 @@ public final class FoundationContext {
     }
     
     public func respond(to message: String) async throws -> String {
+        if try await isTooLarge() {
+            reset()
+        }
+        
         do {
             let response = try await session.respond(to: message)
             return response.content
