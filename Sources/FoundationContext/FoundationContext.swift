@@ -4,17 +4,20 @@ public final class FoundationContext {
     private let model: SystemLanguageModel
     private let instructions: String?
     private let tokenLimit: Int
+    private let keptEntryCount: Int
     private var session: LanguageModelSession
     private var history: [String] = []
     
     public init(
         model: SystemLanguageModel = .default,
         instructions: String? = nil,
-        tokenLimit: Int = 4096
+        tokenLimit: Int = 4096,
+        keptEntryCount: Int = 4
     ) {
         self.model = model
         self.instructions = instructions
         self.tokenLimit = tokenLimit
+        self.keptEntryCount = keptEntryCount
         self.session = LanguageModelSession(
             model: model,
             instructions: instructions
@@ -73,8 +76,38 @@ public final class FoundationContext {
     }
     
     private func recoverAndRetry(_ message: String) async throws -> String {
-        reset()
+        let transcript = compactTranscript()
+        self.session = LanguageModelSession(
+            model: model,
+            transcript: transcript
+        )
+        
         return try await send(message)
+    }
+    
+    private func compactTranscript() -> Transcript {
+        let transcript = session.transcript
+        
+        let instructionEntries = transcript.filter { entry in
+            if case .instructions = entry {
+                return true
+            }
+            
+            return false
+        }
+        
+        let recentEntries = transcript.filter { entry in
+            if case .instructions = entry {
+                return false
+            }
+            
+            return true
+        }
+            .suffix(keptEntryCount)
+        
+        return Transcript(
+            entries: instructionEntries + recentEntries
+        )
     }
 }
 
@@ -82,7 +115,6 @@ public final class FoundationContext {
 import Playgrounds
 
 #Playground {
-    
     let context = FoundationContext(
         instructions: "You are a helpful assistant. Keep replies short."
     )

@@ -44,3 +44,10 @@ func prewarmsContext() {
     let context = FoundationContext()
     context.prewarm()
 }
+
+@Test
+func createsContextWithKeptEntryCount() {
+    _ = FoundationContext(
+        keptEntryCount: 4
+    )
+}
