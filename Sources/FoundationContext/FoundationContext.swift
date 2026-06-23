@@ -115,33 +115,3 @@ public final class FoundationContext {
         compactTranscriptHistory()
     }
 }
-
-#if DEBUG
-import Playgrounds
-
-#Playground {
-    let context = FoundationContext(
-        instructions: "You are a helpful assistant. Keep replies short."
-    )
-    
-    context.prewarm()
-    
-    let first = try await context.respond(
-        to: "Please remember that my name is Ricky."
-    )
-    
-    let second = try await context.respond(
-        to: "What name did I tell you?"
-    )
-    
-    let beforeReset = try await context.tokenCount()
-    
-    let isTooLarge = try await context.isTooLarge()
-    
-    context.reset()
-    
-    let afterResetTokens = try await context.tokenCount()
-    
-    let afterReset = try await context.respond(to: "What name did I tell you?")
-}
-#endif
