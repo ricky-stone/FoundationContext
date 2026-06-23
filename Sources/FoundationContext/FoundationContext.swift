@@ -14,6 +14,9 @@ public final class FoundationContext {
     private var session: LanguageModelSession
     private var transcriptHistory: [String] = []
     private var summary: String?
+    private var summaryInputLimit: Int {
+        max(1, maxTokens / 2)
+    }
     
     /// Creates a context for sending messages to a Foundation Models session.
     ///
@@ -122,7 +125,7 @@ public final class FoundationContext {
     // MARK: - Summarizing
     
     private func summarize() async {
-        let text = summaryText()
+        let text = await summaryText()
         
         guard text.isEmpty == false else {
             return
@@ -148,18 +151,67 @@ public final class FoundationContext {
         }
     }
     
-    private func summaryText() -> String {
+    private func summaryText() async -> String {
+        let withSummary = await boundedSummaryText(
+            history: transcriptHistory,
+            includeSummary: true
+        )
+        
+        if withSummary.keptHistoryCount > 0 || transcriptHistory.isEmpty || summary == nil {
+            return withSummary.text
+        }
+        
+        let withoutSummary = await boundedSummaryText(
+            history: transcriptHistory,
+            includeSummary: false
+        )
+        
+        if withoutSummary.text.isEmpty == false {
+            return withoutSummary.text
+        }
+        
+        return withSummary.text
+    }
+    
+    private func boundedSummaryText(
+        history originalHistory: [String],
+        includeSummary: Bool
+    ) async -> (text: String, keptHistoryCount: Int) {
+        var history = originalHistory
+        var text = makeSummaryText(history: history, includeSummary: includeSummary)
+        
+        while await isSummaryTextTooLarge(text), history.isEmpty == false {
+            history.removeFirst()
+            text = makeSummaryText(history: history, includeSummary: includeSummary)
+        }
+        
+        guard await isSummaryTextTooLarge(text) == false else {
+            return ("", 0)
+        }
+        
+        return (text, history.count)
+    }
+    
+    private func makeSummaryText(history: [String], includeSummary: Bool) -> String {
         var parts: [String] = []
         
-        if let summary = summary {
+        if includeSummary, let summary = summary {
             parts.append("Existing summary:\n\(summary)")
         }
         
-        if transcriptHistory.isEmpty == false {
-            parts.append("Recent conversation:\n\(transcriptHistory.joined(separator: "\n"))")
+        if history.isEmpty == false {
+            parts.append("Recent conversation:\n\(history.joined(separator: "\n"))")
         }
         
         return parts.joined(separator: "\n\n")
+    }
+    
+    private func isSummaryTextTooLarge(_ text: String) async -> Bool {
+        if let tokenCount = try? await model.tokenCount(for: text) {
+            return tokenCount > summaryInputLimit
+        }
+        
+        return text.count > summaryInputLimit * 3
     }
     
     // MARK: - Compacting
