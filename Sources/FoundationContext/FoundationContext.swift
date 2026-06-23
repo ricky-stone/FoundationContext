@@ -3,7 +3,7 @@ import FoundationModels
 public final class FoundationContext {
     private let model: SystemLanguageModel
     private let instructions: String?
-    private let tokenLimit: Int
+    public let tokenLimit: Int
     private let keptEntryCount: Int
     private var session: LanguageModelSession
     private var transcriptHistory: [String] = []

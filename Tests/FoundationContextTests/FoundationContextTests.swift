@@ -53,10 +53,12 @@ func createsContextWithKeptEntryCount() {
 }
 
 @Test
-func createsContextWithLowTokenLimit() {
-    _ = FoundationContext(
+func clampsLowTokenLimit() {
+    let context = FoundationContext(
         tokenLimit: 0
     )
+    
+    #expect(context.tokenLimit == 1)
 }
 
 @Test
