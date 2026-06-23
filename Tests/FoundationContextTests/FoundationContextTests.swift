@@ -50,10 +50,10 @@ func prewarmsContext() {
 @Test
 func storesKeptEntryCount() {
     let context = FoundationContext(
-        keptEntryCount: 6
+        keepLast: 6
     )
     
-    #expect(context.keptEntryCount == 6)
+    #expect(context.keepLast == 6)
 }
 
 @Test
@@ -68,10 +68,10 @@ func clampsLowMaxTokens() {
 @Test
 func clampsNegativeKeptEntryCount() {
     let context = FoundationContext(
-        keptEntryCount: -1
+        keepLast: -1
     )
     
-    #expect(context.keptEntryCount == 0)
+    #expect(context.keepLast == 0)
 }
 
 @Test
@@ -83,7 +83,7 @@ func compactsContext() {
 @Test
 func compactsWithNoKeptEntries() {
     let context = FoundationContext(
-        keptEntryCount: 0
+        keepLast: 0
     )
     
     context.compact()

@@ -4,7 +4,7 @@ public final class FoundationContext {
     private let model: SystemLanguageModel
     private let instructions: String?
     public let maxTokens: Int
-    public let keptEntryCount: Int
+    public let keepLast: Int
     private var session: LanguageModelSession
     private var transcriptHistory: [String] = []
     
@@ -12,12 +12,12 @@ public final class FoundationContext {
         model: SystemLanguageModel = .default,
         instructions: String? = nil,
         maxTokens: Int = 4096,
-        keptEntryCount: Int = 4
+        keepLast: Int = 4
     ) {
         self.model = model
         self.instructions = instructions
         self.maxTokens = max(1, maxTokens)
-        self.keptEntryCount = max(0, keptEntryCount)
+        self.keepLast = max(0, keepLast)
         self.session = LanguageModelSession(
             model: model,
             instructions: instructions
@@ -98,7 +98,7 @@ public final class FoundationContext {
             
             return true
         }
-            .suffix(keptEntryCount)
+            .suffix(keepLast)
         
         return Transcript(
             entries: instructionEntries + recentEntries
@@ -106,7 +106,7 @@ public final class FoundationContext {
     }
     
     private func compactTranscriptHistory() {
-        transcriptHistory = Array(transcriptHistory.suffix(keptEntryCount))
+        transcriptHistory = Array(transcriptHistory.suffix(keepLast))
     }
     
     private func compactSession() {
