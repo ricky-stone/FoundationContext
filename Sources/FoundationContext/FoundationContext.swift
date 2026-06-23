@@ -16,7 +16,7 @@ public final class FoundationContext {
     ) {
         self.model = model
         self.instructions = instructions
-        self.maxTokens = max(1,maxTokens)
+        self.maxTokens = max(1, maxTokens)
         self.keptEntryCount = max(0, keptEntryCount)
         self.session = LanguageModelSession(
             model: model,
@@ -37,7 +37,7 @@ public final class FoundationContext {
     }
     
     public func respond(to message: String) async throws -> String {
-        if try await isTooLarge() {
+        if try await needsCompact() {
             compactSession()
         }
         
@@ -52,7 +52,7 @@ public final class FoundationContext {
         try await model.tokenCount(for: session.transcript)
     }
     
-    public func isTooLarge() async throws -> Bool {
+    public func needsCompact() async throws -> Bool {
         try await tokenCount() > maxTokens
     }
     

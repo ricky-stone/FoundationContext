@@ -59,7 +59,7 @@ func storesKeptEntryCount() {
 @Test
 func clampsLowMaxTokens() {
     let context = FoundationContext(
-                        maxTokens: 0
+        maxTokens: 0
     )
     
     #expect(context.maxTokens == 1)
