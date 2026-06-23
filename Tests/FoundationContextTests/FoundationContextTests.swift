@@ -20,12 +20,12 @@ func resetsContext() {
 }
 
 @Test
-func storesTokenLimit() {
+func storesMaxTokens() {
     let context = FoundationContext(
-        tokenLimit: 2048
+                        maxTokens: 2048
     )
     
-    #expect(context.tokenLimit == 2048)
+    #expect(context.maxTokens == 2048)
 }
 
 @Test
@@ -57,12 +57,12 @@ func storesKeptEntryCount() {
 }
 
 @Test
-func clampsLowTokenLimit() {
+func clampsLowMaxTokens() {
     let context = FoundationContext(
-        tokenLimit: 0
+                        maxTokens: 0
     )
     
-    #expect(context.tokenLimit == 1)
+    #expect(context.maxTokens == 1)
 }
 
 @Test
@@ -78,4 +78,15 @@ func clampsNegativeKeptEntryCount() {
 func compactsContext() {
     let context = FoundationContext()
     context.compact()
+}
+
+@Test
+func compactsWithNoKeptEntries() {
+    let context = FoundationContext(
+        keptEntryCount: 0
+    )
+    
+    context.compact()
+    
+    #expect(context.transcript == [])
 }

@@ -3,7 +3,7 @@ import FoundationModels
 public final class FoundationContext {
     private let model: SystemLanguageModel
     private let instructions: String?
-    public let tokenLimit: Int
+    public let maxTokens: Int
     public let keptEntryCount: Int
     private var session: LanguageModelSession
     private var transcriptHistory: [String] = []
@@ -11,12 +11,12 @@ public final class FoundationContext {
     public init(
         model: SystemLanguageModel = .default,
         instructions: String? = nil,
-        tokenLimit: Int = 4096,
+                        maxTokens: Int = 4096,
         keptEntryCount: Int = 4
     ) {
         self.model = model
         self.instructions = instructions
-        self.tokenLimit = max(1, tokenLimit)
+        self.maxTokens = max(1,maxTokens)
         self.keptEntryCount = max(0, keptEntryCount)
         self.session = LanguageModelSession(
             model: model,
@@ -53,7 +53,7 @@ public final class FoundationContext {
     }
     
     public func isTooLarge() async throws -> Bool {
-        try await tokenCount() > tokenLimit
+        try await tokenCount() > maxTokens
     }
     
     public func compact() {
@@ -119,3 +119,33 @@ public final class FoundationContext {
         compactTranscriptHistory()
     }
 }
+
+#if DEBUG
+import Playgrounds
+
+#Playground {
+    let context = FoundationContext(
+        instructions: "You are a helpful assistant. Keep replies short.",
+        maxTokens: 50,
+        keptEntryCount: 2
+    )
+
+    let first = try await context.respond(
+        to: "My name is Ricky. Reply with OK."
+    )
+
+    let second = try await context.respond(
+        to: "What is my name?"
+    )
+
+    let beforeAutoCompact = try await context.tokenCount()
+
+    let third = try await context.respond(
+        to: "Remember that I am learning Swift packages. Reply with OK."
+    )
+
+    let afterAutoCompact = try await context.tokenCount()
+
+    context.transcript
+}
+#endif
