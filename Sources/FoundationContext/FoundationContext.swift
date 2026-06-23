@@ -5,6 +5,7 @@ public final class FoundationContext {
     private let instructions: String?
     private let tokenLimit: Int
     private var session: LanguageModelSession
+    private var history: [String] = []
     
     public init(
         model: SystemLanguageModel = .default,
@@ -41,6 +42,7 @@ public final class FoundationContext {
     }
     
     public func reset() {
+        history.removeAll()
         self.session = LanguageModelSession(
             model: model,
             instructions: instructions
@@ -49,6 +51,8 @@ public final class FoundationContext {
     
     private func send(_ message: String) async throws -> String {
         let response = try await session.respond(to: message)
+        history.append("User: \(message)")
+        history.append("Assistant: \(response.content)")
         return response.content
     }
     
