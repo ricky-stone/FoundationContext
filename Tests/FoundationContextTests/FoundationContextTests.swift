@@ -48,7 +48,7 @@ func prewarmsContext() {
 }
 
 @Test
-func storesKeptEntryCount() {
+func storesKeepLast() {
     let context = FoundationContext(
         keepLast: 6
     )
@@ -66,7 +66,7 @@ func clampsLowMaxTokens() {
 }
 
 @Test
-func clampsNegativeKeptEntryCount() {
+func clampsNegativeKeepLast() {
     let context = FoundationContext(
         keepLast: -1
     )
