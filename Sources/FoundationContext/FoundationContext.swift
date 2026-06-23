@@ -21,6 +21,10 @@ public final class FoundationContext {
         )
     }
     
+    public var transcript: [String] {
+        return history
+    }
+    
     public func respond(to message: String) async throws -> String {
         if try await isTooLarge() {
             reset()

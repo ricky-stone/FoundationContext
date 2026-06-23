@@ -25,3 +25,10 @@ func createsContextWithTokenLimit() {
         tokenLimit: 4096
     )
 }
+
+@Test
+func startsWithEmptyTranscript() {
+    let context = FoundationContext()
+    
+    #expect(context.transcript == [])
+}
