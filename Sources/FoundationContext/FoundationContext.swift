@@ -101,12 +101,18 @@ public final class FoundationContext {
         )
     }
     
+    private func compactTranscriptHistory() {
+        transcriptHistory = Array(transcriptHistory.suffix(keptEntryCount))
+    }
+    
     private func compact() {
         let transcript = compactTranscript()
         self.session = LanguageModelSession(
             model: model,
             transcript: transcript
         )
+        
+        compactTranscriptHistory()
     }
 }
 
