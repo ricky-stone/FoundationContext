@@ -21,6 +21,10 @@ public final class FoundationContext {
         )
     }
     
+    public var availability: SystemLanguageModel.Availability {
+        model.availability
+    }
+    
     public var transcript: [String] {
         return history
     }

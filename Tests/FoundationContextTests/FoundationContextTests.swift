@@ -32,3 +32,9 @@ func startsWithEmptyTranscript() {
     
     #expect(context.transcript == [])
 }
+
+@Test
+func exposesAvailability() {
+    let context = FoundationContext()
+    _ = context.availability
+}
