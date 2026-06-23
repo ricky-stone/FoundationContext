@@ -62,8 +62,10 @@ func clampsLowTokenLimit() {
 }
 
 @Test
-func createsContextWithNegativeKeptEntryCount() {
-    _ = FoundationContext(
+func clampsNegativeKeptEntryCount() {
+    let context = FoundationContext(
         keptEntryCount: -1
     )
+    
+    #expect(context.keptEntryCount == 0)
 }
