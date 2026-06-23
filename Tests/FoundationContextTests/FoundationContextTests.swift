@@ -20,10 +20,12 @@ func resetsContext() {
 }
 
 @Test
-func createsContextWithTokenLimit() {
-    _ = FoundationContext(
-        tokenLimit: 4096
+func storesTokenLimit() {
+    let context = FoundationContext(
+        tokenLimit: 2048
     )
+    
+    #expect(context.tokenLimit == 2048)
 }
 
 @Test
@@ -46,10 +48,12 @@ func prewarmsContext() {
 }
 
 @Test
-func createsContextWithKeptEntryCount() {
-    _ = FoundationContext(
-        keptEntryCount: 4
+func storesKeptEntryCount() {
+    let context = FoundationContext(
+        keptEntryCount: 6
     )
+    
+    #expect(context.keptEntryCount == 6)
 }
 
 @Test
