@@ -16,8 +16,8 @@ public final class FoundationContext {
     ) {
         self.model = model
         self.instructions = instructions
-        self.tokenLimit = tokenLimit
-        self.keptEntryCount = keptEntryCount
+        self.tokenLimit = max(1, tokenLimit)
+        self.keptEntryCount = max(0, keptEntryCount)
         self.session = LanguageModelSession(
             model: model,
             instructions: instructions

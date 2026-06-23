@@ -51,3 +51,17 @@ func createsContextWithKeptEntryCount() {
         keptEntryCount: 4
     )
 }
+
+@Test
+func createsContextWithLowTokenLimit() {
+    _ = FoundationContext(
+        tokenLimit: 0
+    )
+}
+
+@Test
+func createsContextWithNegativeKeptEntryCount() {
+    _ = FoundationContext(
+        keptEntryCount: -1
+    )
+}
