@@ -22,7 +22,7 @@ func resetsContext() {
 @Test
 func storesMaxTokens() {
     let context = FoundationContext(
-                        maxTokens: 2048
+        maxTokens: 2048
     )
     
     #expect(context.maxTokens == 2048)

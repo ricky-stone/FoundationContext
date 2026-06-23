@@ -11,7 +11,7 @@ public final class FoundationContext {
     public init(
         model: SystemLanguageModel = .default,
         instructions: String? = nil,
-                        maxTokens: Int = 4096,
+        maxTokens: Int = 4096,
         keptEntryCount: Int = 4
     ) {
         self.model = model
@@ -119,33 +119,3 @@ public final class FoundationContext {
         compactTranscriptHistory()
     }
 }
-
-#if DEBUG
-import Playgrounds
-
-#Playground {
-    let context = FoundationContext(
-        instructions: "You are a helpful assistant. Keep replies short.",
-        maxTokens: 50,
-        keptEntryCount: 2
-    )
-
-    let first = try await context.respond(
-        to: "My name is Ricky. Reply with OK."
-    )
-
-    let second = try await context.respond(
-        to: "What is my name?"
-    )
-
-    let beforeAutoCompact = try await context.tokenCount()
-
-    let third = try await context.respond(
-        to: "Remember that I am learning Swift packages. Reply with OK."
-    )
-
-    let afterAutoCompact = try await context.tokenCount()
-
-    context.transcript
-}
-#endif
