@@ -42,7 +42,7 @@ public final class FoundationContext {
     
     public func respond(to message: String) async throws -> String {
         if try await isTooLarge() {
-            reset()
+            compact()
         }
         
         do {
@@ -76,12 +76,7 @@ public final class FoundationContext {
     }
     
     private func recoverAndRetry(_ message: String) async throws -> String {
-        let transcript = compactTranscript()
-        self.session = LanguageModelSession(
-            model: model,
-            transcript: transcript
-        )
-        
+        compact()
         return try await send(message)
     }
     
@@ -107,6 +102,14 @@ public final class FoundationContext {
         
         return Transcript(
             entries: instructionEntries + recentEntries
+        )
+    }
+    
+    private func compact() {
+        let transcript = compactTranscript()
+        self.session = LanguageModelSession(
+            model: model,
+            transcript: transcript
         )
     }
 }
