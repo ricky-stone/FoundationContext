@@ -38,7 +38,7 @@ public final class FoundationContext {
     
     public func respond(to message: String) async throws -> String {
         if try await isTooLarge() {
-            compact()
+            compactSession()
         }
         
         do {
@@ -54,6 +54,10 @@ public final class FoundationContext {
     
     public func isTooLarge() async throws -> Bool {
         try await tokenCount() > tokenLimit
+    }
+    
+    public func compact() {
+        compactSession()
     }
     
     public func reset() {
@@ -72,7 +76,7 @@ public final class FoundationContext {
     }
     
     private func recoverAndRetry(_ message: String) async throws -> String {
-        compact()
+        compactSession()
         return try await send(message)
     }
     
@@ -105,7 +109,7 @@ public final class FoundationContext {
         transcriptHistory = Array(transcriptHistory.suffix(keptEntryCount))
     }
     
-    private func compact() {
+    private func compactSession() {
         let transcript = compactTranscript()
         self.session = LanguageModelSession(
             model: model,

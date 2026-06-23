@@ -73,3 +73,9 @@ func clampsNegativeKeptEntryCount() {
     
     #expect(context.keptEntryCount == 0)
 }
+
+@Test
+func compactsContext() {
+    let context = FoundationContext()
+    context.compact()
+}
