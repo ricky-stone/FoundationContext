@@ -7,6 +7,7 @@ public final class FoundationContext {
     public let keepLast: Int
     private var session: LanguageModelSession
     private var transcriptHistory: [String] = []
+    private var summary: String?
     
     public init(
         model: SystemLanguageModel = .default,
@@ -62,7 +63,8 @@ public final class FoundationContext {
     
     public func reset() {
         transcriptHistory.removeAll()
-        self.session = LanguageModelSession(
+        summary = nil
+        session = LanguageModelSession(
             model: model,
             instructions: instructions
         )
@@ -83,14 +85,6 @@ public final class FoundationContext {
     private func compactTranscript() -> Transcript {
         let transcript = session.transcript
         
-        let instructionEntries = transcript.filter { entry in
-            if case .instructions = entry {
-                return true
-            }
-            
-            return false
-        }
-        
         let recentEntries = transcript.filter { entry in
             if case .instructions = entry {
                 return false
@@ -100,9 +94,42 @@ public final class FoundationContext {
         }
             .suffix(keepLast)
         
-        return Transcript(
-            entries: instructionEntries + recentEntries
+        var entries: [Transcript.Entry] = []
+        
+        if let instructionEntry = compactInstructionEntry() {
+            entries.append(instructionEntry)
+        }
+        
+        entries.append(contentsOf: recentEntries)
+        
+        return Transcript(entries: entries)
+    }
+    
+    private func compactInstructionEntry() -> Transcript.Entry? {
+        var parts: [String] = []
+        
+        if let instructions = instructions {
+            parts.append(instructions)
+        }
+        
+        if let summary = summary {
+            parts.append("Previous context:\n\(summary)")
+        }
+        
+        guard parts.isEmpty == false else {
+            return nil
+        }
+        
+        let text = parts.joined(separator: "\n\n")
+        
+        let instructions = Transcript.Instructions(
+            segments: [
+                .text(Transcript.TextSegment(content: text))
+            ],
+            toolDefinitions: []
         )
+        
+        return .instructions(instructions)
     }
     
     private func compactTranscriptHistory() {
@@ -111,7 +138,7 @@ public final class FoundationContext {
     
     private func compactSession() {
         let transcript = compactTranscript()
-        self.session = LanguageModelSession(
+        session = LanguageModelSession(
             model: model,
             transcript: transcript
         )
