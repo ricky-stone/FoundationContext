@@ -25,6 +25,10 @@ public final class FoundationContext {
         model.availability
     }
     
+    public func prewarm() {
+        session.prewarm()
+    }
+    
     public var transcript: [String] {
         return history
     }
@@ -78,9 +82,12 @@ public final class FoundationContext {
 import Playgrounds
 
 #Playground {
+    
     let context = FoundationContext(
         instructions: "You are a helpful assistant. Keep replies short."
     )
+    
+    context.prewarm()
     
     let first = try await context.respond(
         to: "Please remember that my name is Ricky."

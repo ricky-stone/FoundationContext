@@ -38,3 +38,9 @@ func exposesAvailability() {
     let context = FoundationContext()
     _ = context.availability
 }
+
+@Test
+func prewarmsContext() {
+    let context = FoundationContext()
+    context.prewarm()
+}
