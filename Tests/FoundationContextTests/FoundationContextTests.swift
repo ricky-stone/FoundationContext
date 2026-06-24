@@ -142,3 +142,27 @@ func compactsTranscriptKeepingOnlyInstructions() {
         instructions
     ])
 }
+
+@Test
+func compactsWhenTokenCountReachesLimit() {
+    let context = FoundationContext()
+    
+    let shouldCompact = context.shouldCompact(
+        tokenCount: 3096,
+        compactAtTokens: 3096
+    )
+    
+    #expect(shouldCompact)
+}
+
+@Test
+func doesNotCompactWhenTokenCountIsBelowLimit() {
+    let context = FoundationContext()
+    
+    let shouldCompact = context.shouldCompact(
+        tokenCount: 3095,
+        compactAtTokens: 3096
+    )
+    
+    #expect(!shouldCompact)
+}

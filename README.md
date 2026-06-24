@@ -7,7 +7,7 @@
 
 A small Swift package for using Foundation Models with simple context management.
 
-FoundationContext wraps `LanguageModelSession` and retries with a compacted transcript if the model reaches its context limit.
+FoundationContext wraps `LanguageModelSession`, compacts the transcript when it reaches a token threshold, and retries once with a compacted transcript if the model reaches its context limit.
 
 ## Requirements
 
@@ -35,12 +35,15 @@ print(reply)
 
 ## Keeping Recent Context
 
+`compactAtTokens` controls when FoundationContext compacts before responding. It defaults to `3096` tokens.
+
 `keepTurns` controls how much recent conversation is kept when the context needs to be compacted.
 
 ```swift
 let context = FoundationContext(
     instructions: "You are helpful.",
-    keepTurns: 2
+    keepTurns: 2,
+    compactAtTokens: 3096
 )
 ```
 

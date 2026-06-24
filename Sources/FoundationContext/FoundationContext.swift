@@ -1,11 +1,12 @@
 import FoundationModels
 
-/// A lightweight wrapper around Foundation Models that retries with a compacted context when the context window is too large.
+/// A lightweight wrapper around Foundation Models that compacts context before responding and retries once if the context window is too large.
 public final class FoundationContext {
     private let model: SystemLanguageModel
     private let instructions: String?
     private var session: LanguageModelSession
     private let keepTurns: Int
+    private let compactAtTokens: Int
     
     /// Creates a context for sending messages to a Foundation Models session.
     ///
@@ -13,10 +14,12 @@ public final class FoundationContext {
     ///   - model: The system language model to use.
     ///   - instructions: Optional instructions for the model.
     ///   - keepTurns: The number of recent text turns to keep when compacting.
+    ///   - compactAtTokens: The transcript token count that triggers compacting before responding.
     public init(
         model: SystemLanguageModel = .default,
         instructions: String? = nil,
-        keepTurns: Int = 1
+        keepTurns: Int = 1,
+        compactAtTokens: Int = 3096
     ) {
         self.model = model
         self.instructions = instructions
@@ -25,6 +28,7 @@ public final class FoundationContext {
             instructions: instructions
         )
         self.keepTurns = max(0, keepTurns)
+        self.compactAtTokens = max(0, compactAtTokens)
     }
     
     /// A Boolean value that indicates whether the model is currently generating a response.
@@ -39,7 +43,8 @@ public final class FoundationContext {
     
     /// Sends a message to the model and returns the response text.
     ///
-    /// If the model reports that the context window is too large, the context is compacted and the message is retried.
+    /// Before sending, the current transcript is compacted when it reaches `compactAtTokens`.
+    /// If Foundation Models still reports that the context window is too large, the context is compacted and the message is retried once.
     ///
     /// - Parameters:
     ///   - message: The message to send to the model.
@@ -51,10 +56,20 @@ public final class FoundationContext {
         options: GenerationOptions = GenerationOptions()
     ) async throws -> String {
         do {
+            let tokenCount = try await model.tokenCount(for: session.transcript)
+            
+            if shouldCompact(
+                tokenCount: tokenCount,
+                compactAtTokens: compactAtTokens
+            ) {
+                compact()
+            }
+            
             return try await send(
                 message,
                 options: options
             )
+            
         } catch LanguageModelSession.GenerationError.exceededContextWindowSize {
             compact()
             
@@ -132,5 +147,12 @@ public final class FoundationContext {
         return Transcript(
             entries: instructions + recentEntries
         )
+    }
+    
+    internal func shouldCompact(
+        tokenCount: Int,
+        compactAtTokens: Int
+    ) -> Bool {
+        return tokenCount >= compactAtTokens
     }
 }
