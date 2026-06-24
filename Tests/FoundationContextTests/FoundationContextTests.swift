@@ -21,6 +21,12 @@ func exposesIsResponding() {
 }
 
 @Test
+func exposesTranscript() {
+    let context = FoundationContext()
+    _ = context.transcript
+}
+
+@Test
 func compactsTranscript() {
     let context = FoundationContext()
     
@@ -79,7 +85,7 @@ func compactsTranscript() {
     
     let compacted = context.compactTranscript(
         transcript,
-        keepLast: 2
+        keepTurns: 1
     )
     
     #expect(Array(compacted) == [
