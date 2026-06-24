@@ -1,5 +1,10 @@
 # Foundation Context
 
+![Swift](https://img.shields.io/badge/Swift-6-orange)
+![Platforms](https://img.shields.io/badge/platforms-iOS%2026.4%2B%20%7C%20macOS%2026.4%2B%20%7C%20visionOS%2026.4%2B-lightgrey)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Release](https://img.shields.io/github/v/release/ricky-stone/FoundationContext?include_prereleases)
+
 A small Swift package for using Foundation Models with a simple context management.
 
 FoundationContext wraps `LanguageModelSession` and retries with a compacted transcript if the model reaches its context limit.
