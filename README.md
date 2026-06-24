@@ -1,5 +1,5 @@
 # Foundation Context
-
+![Tests](https://github.com/ricky-stone/FoundationContext/actions/workflows/tests.yml/badge.svg)
 ![Swift](https://img.shields.io/badge/Swift-6-orange)
 ![Platforms](https://img.shields.io/badge/platforms-iOS%2026.4%2B%20%7C%20macOS%2026.4%2B%20%7C%20visionOS%2026.4%2B-lightgrey)
 ![License](https://img.shields.io/badge/license-MIT-blue)
