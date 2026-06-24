@@ -104,9 +104,6 @@ public final class FoundationContext {
         _ transcript: Transcript,
         keepTurns: Int
     ) -> Transcript {
-        // Each text turn is usually one prompt entry and one response entry.
-        let keepEntries = keepTurns * 2
-        
         let instructions = transcript.filter { entry in
             if case .instructions = entry {
                 return true
@@ -114,6 +111,14 @@ public final class FoundationContext {
             
             return false
         }
+        
+        if keepTurns <= 0 {
+            return Transcript(
+                entries: instructions
+            )
+        }
+        
+        let keepEntries = keepTurns * 2
         
         let recentEntries = transcript.filter { entry in
             if case .instructions = entry {

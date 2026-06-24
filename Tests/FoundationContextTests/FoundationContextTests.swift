@@ -94,3 +94,51 @@ func compactsTranscript() {
         secondResponse
     ])
 }
+
+@Test
+func compactsTranscriptKeepingOnlyInstructions() {
+    let context = FoundationContext()
+    
+    let instructions = Transcript.Entry.instructions(
+        Transcript.Instructions(
+            segments: [
+                .text(Transcript.TextSegment(content: "you are helpful."))
+            ],
+            toolDefinitions: []
+        )
+    )
+    
+    let firstPrompt = Transcript.Entry.prompt(
+        Transcript.Prompt(
+            segments: [
+                .text(Transcript.TextSegment(content: "First"))
+            ]
+        )
+    )
+    
+    let firstResponse = Transcript.Entry.response(
+        Transcript.Response(
+            assetIDs: [],
+            segments: [
+                .text(Transcript.TextSegment(content: "First response"))
+            ]
+        )
+    )
+    
+    let transcript = Transcript(
+        entries: [
+            instructions,
+            firstPrompt,
+            firstResponse
+        ]
+    )
+    
+    let compacted = context.compactTranscript(
+        transcript,
+        keepTurns: 0
+    )
+    
+    #expect(Array(compacted) == [
+        instructions
+    ])
+}
