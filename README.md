@@ -16,6 +16,31 @@ FoundationContext wraps `LanguageModelSession`, compacts the transcript when it 
 - visionOS 26.4+
 - Swift 6
 
+## Installation
+
+Add FoundationContext to your project using Swift Package Manager.
+
+In Xcode:
+
+```text
+File > Add Package Dependencies...
+```
+
+Then enter:
+
+```text
+https://github.com/ricky-stone/FoundationContext
+```
+
+Or add it to your `Package.swift` file:
+
+```swift
+.package(
+    url: "https://github.com/ricky-stone/FoundationContext.git",
+    from: "0.2.0"
+)
+```
+
 ## Basic Usage
 
 ```swift
