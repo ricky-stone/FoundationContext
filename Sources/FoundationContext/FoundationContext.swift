@@ -41,9 +41,9 @@ public final class FoundationContext {
     }
     
     public func reset() {
-        self.session = LanguageModelSession(
+        session = LanguageModelSession(
             model: model,
-            instructions: self.instructions
+            instructions: instructions
         )
     }
     
@@ -64,7 +64,7 @@ public final class FoundationContext {
             keepLast: 2
         )
         
-        self.session = LanguageModelSession(
+        session = LanguageModelSession(
             model: model,
             transcript: newTranscript
         )
